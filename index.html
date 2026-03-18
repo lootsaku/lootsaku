@@ -550,7 +550,7 @@
                     return;
                 }
 
-                appendMessage('bot', 'Halo Bossku! Mohon tunggu sebentar, kamu akan terhubung dengan Admin kami... 👨‍💻');
+                appendMessage('bot', '');
                 startLiveChatListener();
             }
         }
@@ -598,7 +598,8 @@
                     sender: 'user',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                showTypingIndicator('Admin sedang mengetik...');
+                // PERBAIKAN: Mengganti multiline string dengan backtick dan menggunakan appendMessage
+                appendMessage('bot', `Halo, terima kasih telah menghubungi LootSaku 🙏<br><br>Pesan Anda telah kami terima. Untuk memastikan pelayanan terbaik, permintaan Anda akan segera kami teruskan ke tim terkait.<br><br>Mohon tunggu sebentar ya, nanti tim kami akan segera menghubungi Anda kembali.<br><br>Terima kasih atas kepercayaan Anda kepada LootSaku ✨`);
             } catch (error) {
                 console.error("Error mengirim:", error);
                 appendMessage('bot', 'Gagal mengirim pesan ke server.');
