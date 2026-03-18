@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LootSaku - Top Up & Digital Payment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>LootSaku - Digital Game Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
     <style>
+        /* =========================================
+           CSS Reset & Base Styles
+           ========================================= */
         * {
             margin: 0;
             padding: 0;
@@ -16,559 +22,706 @@
         }
 
         body {
-            background: radial-gradient(circle at top, #3a0d0d, #0f0505);
+            background: radial-gradient(circle at top, #3a1622 0%, #11080a 100%);
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 40px 20px;
-            position: relative;
+            padding: 20px 0;
         }
 
         .container {
             width: 100%;
             max-width: 480px;
+            padding: 0 20px;
+        }
+
+        .profile {
             text-align: center;
-        }
-
-        /* Profile Section */
-        .profile-img {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #f9a826;
-            box-shadow: 0 0 20px rgba(249, 168, 38, 0.5);
-            margin-bottom: 15px;
-            background-color: #fff;
-        }
-
-        .profile-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #f9a826;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .profile-bio {
-            font-size: 0.95rem;
-            color: #e0e0e0;
             margin-bottom: 25px;
-            line-height: 1.5;
+            margin-top: 20px;
         }
 
-        .badge-container {
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid #ff8c00;
+        }
+
+        .profile h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile p {
+            font-size: 13px;
+            color: #d1d1d1;
+            margin-bottom: 15px;
+        }
+
+        .badges {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .badge {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
+            background-color: transparent;
+            border: 1px solid #ff8c00;
+            color: #ff8c00;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            border: 1px solid rgba(249, 168, 38, 0.3);
+            font-size: 11px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .badge i {
-            color: #f9a826;
-        }
-
-        /* Main Links Section */
-        .links-container {
+        .action-btns {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 35px;
+            gap: 12px;
+            margin-bottom: 30px;
         }
 
-        .link-btn {
+        .btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px;
             border-radius: 12px;
             text-decoration: none;
+            color: white;
             font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ffb347, #ff7b00);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(255, 123, 0, 0.4);
-            border: none;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border: 1px solid rgba(249, 168, 38, 0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        /* Animasi Spesial Tombol AI */
-        .btn-ai {
-            background: linear-gradient(270deg, #ff007f, #7928ca, #ff007f);
-            background-size: 400% 400%;
-            color: #ffffff;
-            border: none;
-            box-shadow: 0 4px 15px rgba(121, 40, 202, 0.5);
-            animation: ai-gradient 3s ease infinite;
+            font-size: 14px;
+            transition: transform 0.2s ease, filter 0.2s ease;
             cursor: pointer;
         }
 
-        @keyframes ai-gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
 
-        .link-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(249, 168, 38, 0.6);
-        }
+        .btn-ai { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); }
+        .btn-bot { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .btn-live { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+        .btn-web { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
 
-        .btn-ai:hover {
-            box-shadow: 0 6px 20px rgba(121, 40, 202, 0.8);
-        }
+        .category { margin-bottom: 25px; }
 
-        /* Grid Sections */
-        .section-title {
-            text-align: left;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #ffffff;
+        .category-title {
+            font-size: 15px;
+            font-weight: 600;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .section-title i {
-            color: #f9a826;
-        }
+        .category-title i { color: #ff8c00; }
 
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 35px;
+            gap: 12px;
         }
 
-        .grid-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .grid-item {
+            background-color: #26161d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
             text-decoration: none;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
+            color: white;
+            display: block;
         }
 
-        .grid-card:hover {
-            background: rgba(249, 168, 38, 0.1);
-            border-color: #f9a826;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(249, 168, 38, 0.2);
+        .grid-item:hover {
+            background-color: #331f28;
+            transform: scale(1.02);
         }
 
-        .grid-icon {
+        .item-img {
             width: 50px;
             height: 50px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin: 0 auto 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+        }
+
+        .item-img img {
+            width: 100%;
+            height: 100%;
             border-radius: 10px;
             object-fit: cover;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            background-color: #fff;
         }
 
-        .grid-name {
-            font-size: 0.85rem;
-            font-weight: 600;
+        .grid-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        footer {
             text-align: center;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 20px;
-            font-size: 0.8rem;
+            font-size: 10px;
             color: #888;
-            padding-bottom: 30px;
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
 
-        .footer span {
-            color: #f9a826;
-            font-weight: 600;
+        footer a {
+            color: #ff8c00;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        footer a:hover {
+            color: #ffffff;
+            text-decoration: underline;
         }
 
-        /* Floating Live Chat Button */
-        .floating-chat {
+        .fab {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, #f9a826, #ff7b00);
-            color: #fff;
-            width: 60px;
-            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background-color: #ff8c00;
+            color: white;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 15px rgba(255, 123, 0, 0.5);
-            cursor: pointer;
-            z-index: 1000;
+            justify-content: center;
+            font-size: 24px;
             text-decoration: none;
-            animation: pulse-animation 2s infinite;
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+            transition: transform 0.2s ease;
+            z-index: 999;
         }
 
-        .floating-chat:hover {
-            transform: scale(1.1);
-        }
-
-        @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(255, 123, 0, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 123, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 123, 0, 0); }
-        }
+        .fab:hover { transform: scale(1.1); }
 
         /* =========================================
-           AI CHAT MODAL STYLES 
+           CSS UNTUK CHAT MODAL (FULLSCREEN WHATSAPP STYLE)
            ========================================= */
-        .ai-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
+        .chat-modal {
             display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .ai-modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .ai-chat-box {
-            background: #1a0808;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 15px;
-            border: 1px solid #7928ca;
-            box-shadow: 0 10px 30px rgba(121, 40, 202, 0.4);
-            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;   /* 100% Lebar Layar */
+            height: 100vh;  /* 100% Tinggi Layar */
+            background-color: #11080a; /* Warna latar belakang chat mirip dark mode WA */
+            z-index: 9999;  /* Pastikan paling depan */
             flex-direction: column;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            animation: slideUp 0.3s ease;
         }
 
-        .ai-modal-overlay.active .ai-chat-box {
-            transform: translateY(0);
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        .ai-chat-header {
-            background: linear-gradient(270deg, #ff007f, #7928ca);
+        .chat-header {
+            background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Bayangan kecil di header */
+            z-index: 10;
+        }
+
+        .chat-header.bot-mode { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .chat-header.live-mode { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+
+        .chat-header h3 {
+            font-size: 16px;
             font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
         }
 
-        .close-btn {
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
             cursor: pointer;
-            font-size: 1.2rem;
-            color: #fff;
+            padding: 5px;
         }
 
-        .ai-chat-messages {
-            height: 300px;
-            padding: 15px;
+        /* Area percakapan mengisi sisa layar penuh */
+        .chat-body {
+            flex: 1; /* Mengisi seluruh tinggi yang tersisa antara header dan footer */
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: #0f0505;
+            gap: 12px;
+            /* Opsional: Tambahkan background pattern khas WA di sini jika punya gambarnya */
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Pattern samar */
+            background-color: #0b141a; /* Warna khas WA Dark Mode */
+            background-blend-mode: overlay;
         }
 
-        .msg-bubble {
-            max-width: 80%;
-            padding: 10px 15px;
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
             border-radius: 12px;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            position: relative; /* Untuk buntut balon chat (opsional) */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        .msg-ai {
-            background: #2a1111;
+        .bot-message {
+            background-color: #202c33; /* Warna balon chat lawan di WA Dark */
+            color: #e9edef;
             align-self: flex-start;
-            border-bottom-left-radius: 2px;
-            border: 1px solid rgba(249, 168, 38, 0.2);
+            border-top-left-radius: 0px; /* Efek balon chat */
         }
 
-        .msg-user {
-            background: #7928ca;
+        .user-message {
+            background-color: #005c4b; /* Warna balon chat user di WA Dark */
+            color: #e9edef;
             align-self: flex-end;
-            border-bottom-right-radius: 2px;
+            border-top-right-radius: 0px; /* Efek balon chat */
         }
 
-        .ai-chat-input {
-            display: flex;
-            padding: 15px;
-            background: #1a0808;
-            border-top: 1px solid rgba(255,255,255,0.1);
+        /* Styling tambahan agar link di dalam pesan terlihat jelas */
+        .message a {
+            color: #53bdeb;
+            text-decoration: underline;
         }
 
-        .ai-chat-input input {
-            flex: 1;
+        .chat-footer {
             padding: 10px 15px;
-            border-radius: 20px;
+            background-color: #202c33; /* Warna panel input WA Dark */
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 25px; /* Lebih bulat seperti WA */
             border: none;
-            background: #2a1111;
-            color: #fff;
+            background-color: #2a3942;
+            color: #d1d7db;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
             outline: none;
         }
 
-        .ai-chat-input button {
-            background: #ff007f;
-            color: #fff;
+        .chat-input::placeholder {
+            color: #8696a0;
+        }
+
+        .send-btn {
+            background-color: #00a884; /* Hijau khas tombol kirim WA */
+            color: white;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            margin-left: 10px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             transition: transform 0.2s;
         }
 
-        .ai-chat-input button:hover {
-            transform: scale(1.1);
-        }
+        .send-btn:hover { transform: scale(1.05); }
 
-        @media (max-width: 480px) {
-            .floating-chat {
-                bottom: 20px;
-                right: 20px;
-                width: 55px;
-                height: 55px;
-                font-size: 1.5rem;
-            }
+        .typing-indicator i {
+            font-size: 12px;
+            color: #8696a0;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="https://via.placeholder.com/150/FFFFFF/000000?text=Logo+LootSaku" alt="LootSaku Logo" class="profile-img">
-        
-        <h1 class="profile-name">LootSaku</h1>
-        <p class="profile-bio">
-            Digital Game Store 🎮<br>
-            Top Up Cepat, Harga Bersahabat 💎
-        </p>
-
-        <div class="badge-container">
-            <div class="badge"><i class="fa-solid fa-lock"></i> Aman & Terpercaya</div>
-            <div class="badge"><i class="fa-solid fa-bolt"></i> Fast Response</div>
+        <div class="profile">
+            <a href="https://lootsaku.com/">
+                <img src="LootSaku.jpeg" alt="LootSaku Logo" class="profile-img">
+            </a>
+            <h1>LootSaku</h1>
+            <p>Digital Game Store 🎮<br>Top Up Cepat, Harga Bersahabat 💎</p>
+            
+            <div class="badges">
+                <div class="badge"><i class="fa-solid fa-lock"></i> Aman & Terpercaya</div>
+                <div class="badge"><i class="fa-solid fa-bolt"></i> Fast Response</div>
+            </div>
         </div>
 
-        <div class="links-container">
-            <button class="link-btn btn-ai" onclick="openAIModal()">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                Tanya LootSaku AI
-            </button>
-
-            <a href="https://lootsaku.com" target="_blank" class="link-btn btn-primary">
-                <i class="fa-solid fa-globe"></i>
-                Kunjungi Website Utama
-            </a>
-        </div>
-
-        <div class="section-title">
-            <i class="fa-solid fa-fire"></i> Top Up Game Populer
-        </div>
-        <div class="grid-container">
-            <a href="https://lootsaku.com/free-fire" class="grid-card">
-                <img src="https://via.placeholder.com/100/ff7b00/ffffff?text=FF" alt="Free Fire" class="grid-icon">
-                <span class="grid-name">Free Fire</span>
-            </a>
-            <a href="https://lootsaku.com/mobile-legends" class="grid-card">
-                <img src="https://via.placeholder.com/100/00a8ff/ffffff?text=ML" alt="Mobile Legends" class="grid-icon">
-                <span class="grid-name">Mobile Legends</span>
-            </a>
-            <a href="https://lootsaku.com/pubg-mobile" class="grid-card">
-                <img src="https://via.placeholder.com/100/ffaa00/ffffff?text=PUBG" alt="PUBG Mobile" class="grid-icon">
-                <span class="grid-name">PUBG Mobile</span>
-            </a>
-            <a href="https://lootsaku.com/valorant" class="grid-card">
-                <img src="https://via.placeholder.com/100/ff4655/ffffff?text=VAL" alt="Valorant" class="grid-icon">
-                <span class="grid-name">Valorant</span>
+        <div class="action-btns">
+            <div class="btn btn-ai" id="btnAI">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>  AI Assistant 
+            </div>
+            <div class="btn btn-bot" id="btnBot">
+                <i class="fa-solid fa-robot"></i>  Chatbot Assistant
+            </div>
+            <div class="btn btn-live" id="btnLive">
+                <i class="fa-solid fa-headset"></i>  Customer Support
+            </div>
+            <a href="https://lootsaku.com/" class="btn btn-web">
+                <i class="fa-solid fa-globe"></i> Kunjungi Website Utama
             </a>
         </div>
 
-        <div class="section-title">
-            <i class="fa-solid fa-ticket"></i> Voucher & Aplikasi
-        </div>
-        <div class="grid-container">
-            <a href="https://lootsaku.com/robux" class="grid-card">
-                <img src="https://via.placeholder.com/100/dcdcdc/000000?text=Robux" alt="Robux" class="grid-icon">
-                <span class="grid-name">Robux (Roblox)</span>
-            </a>
-            <a href="https://lootsaku.com/google-play" class="grid-card">
-                <img src="https://via.placeholder.com/100/eeeeee/000000?text=GPlay" alt="Google Play" class="grid-icon">
-                <span class="grid-name">Google Play</span>
-            </a>
-            <a href="https://lootsaku.com/terabox" class="grid-card">
-                <img src="https://via.placeholder.com/100/0055ff/ffffff?text=Tera" alt="Terabox" class="grid-icon">
-                <span class="grid-name">Terabox Premium</span>
-            </a>
-            <a href="https://lootsaku.com/steam" class="grid-card">
-                <img src="https://via.placeholder.com/100/171a21/ffffff?text=Steam" alt="Steam Wallet" class="grid-icon">
-                <span class="grid-name">Steam Wallet</span>
-            </a>
+        <div class="category">
+            <div class="category-title">
+                <i class="fa-solid fa-fire"></i> Top Up Game Populer
+            </div>
+            <div class="grid-container">
+                <a href="https://lootsaku.com/game/free-fire" class="grid-item">
+                    <div class="item-img"><img src="freefire.png" alt="Free Fire"></div>
+                    <span>Free Fire</span>
+                </a>
+                <a href="https://lootsaku.com/game/mobile-legends" class="grid-item">
+                    <div class="item-img"><img src="mobilelegendes.png" alt="Mobile Legends"></div>
+                    <span>Mobile Legends</span>
+                </a>
+                <a href="https://lootsaku.com/game/pubg-mobile" class="grid-item">
+                    <div class="item-img"><img src="pubgmobile.png" alt="PUBG Mobile"></div>
+                    <span>PUBG Mobile</span>
+                </a>
+                <a href="https://lootsaku.com/game/valorant" class="grid-item">
+                    <div class="item-img"><img src="valorant.png" alt="Valorant"></div>
+                    <span>Valorant</span>
+                </a>
+            </div>
         </div>
 
-        <div class="footer">
-            &copy; 2026 <span>LootSaku</span>. All Rights Reserved.
+        <div class="category">
+            <div class="category-title">
+                <i class="fa-solid fa-ticket"></i> Voucher & Aplikasi
+            </div>
+            <div class="grid-container">
+                <a href="https://lootsaku.com/voucher/roblox" class="grid-item">
+                    <div class="item-img"><img src="roblox.png" alt="Robux"></div>
+                    <span>Robux (Roblox)</span>
+                </a>
+                <a href="https://lootsaku.com/voucher/google-play" class="grid-item">
+                    <div class="item-img"><img src="googleplay.png" alt="Google Play"></div>
+                    <span>Google Play</span>
+                </a>
+                <a href="https://lootsaku.com/voucher/terabox-gift-card" class="grid-item">
+                    <div class="item-img"><img src="terabox.png" alt="Terabox"></div>
+                    <span>Terabox Gift Card</span>
+                </a>
+                <a href="https://lootsaku.com/voucher/steam" class="grid-item">
+                    <div class="item-img"><img src="steam.png" alt="Steam Wallet"></div>
+                    <span>Steam Wallet</span>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            © 2026 <a href="https://lootsaku.com/">LootSaku</a> - All Rights Reserved.
+        </footer>
+    </div>
+
+
+
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header" id="chatHeader">
+            <button class="close-chat" id="closeChat"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3 id="chatTitle" style="flex:1; margin-left: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> LootSaku AI</h3>
+        </div>
+        <div class="chat-body" id="chatBody">
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="userInput" placeholder="Ketik pesan..." autocomplete="off">
+            <button class="send-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
 
-    <a href="https://wa.me/6281275623551?text=Halo%20Admin%20LootSaku,%20saya%20butuh%20bantuan" target="_blank" class="floating-chat" title="Live Chat Support">
-        <i class="fa-solid fa-headset"></i>
-    </a>
+    <script>
+        // ==========================================
+        // KONFIGURASI FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuCyKxaJR-q1ZQ4lVDxyHjPZz8k8007WI",
+            authDomain: "lootsaku-48451.firebaseapp.com",
+            projectId: "lootsaku-48451",
+            storageBucket: "lootsaku-48451.firebasestorage.app",
+            messagingSenderId: "583411768120",
+            appId: "1:583411768120:web:8b78735e33556f0ee6bfcd",
+            measurementId: "G-0DFLGNM0L9"
+        };
 
-    <div class="ai-modal-overlay" id="aiModal">
-        <div class="ai-chat-box">
-            <div class="ai-chat-header">
-                <span>🤖 LootSaku Assistant</span>
-                <i class="fa-solid fa-xmark close-btn" onclick="closeAIModal()"></i>
-            </div>
-            <div class="ai-chat-messages" id="chatMessages">
-                <div class="msg-bubble msg-ai">
-                    Halo bosku! 👋 Saya AI Assistant LootSaku. Ada yang bisa dibantu soal Top Up Game, Voucher, atau PPOB? Tanya aja langsung!
-                </div>
-            </div>
-            <div class="ai-chat-input">
-                <input type="text" id="userInput" placeholder="Ketik pertanyaanmu di sini..." onkeypress="handleKeyPress(event)">
-                <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
-<script>
-const modal = document.getElementById('aiModal');
-const chatBox = document.getElementById('chatMessages');
-const userInput = document.getElementById('userInput');
-
-// URL ini akan mengarah ke server backend Replit kamu
-const API_URL = 'AIzaSyBC13e1Vtr4yki4ik11pxZfUfzQ9fMUKnE'; 
-
-// Menyimpan riwayat obrolan di sisi klien
-let chatHistory = [];
-
-function openAIModal() {
-    modal.classList.add('active');
-    userInput.focus();
-}
-
-function closeAIModal() {
-    modal.classList.remove('active');
-}
-
-function handleKeyPress(e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-}
-
-async function sendMessage() {
-    const text = userInput.value.trim();
-    if (!text) return;
-
-    // 1. Tampilkan pesan user
-    appendMessage(text, 'user');
-    userInput.value = '';
-
-    // 2. Tampilkan loading
-    const typingId = 'typing-' + Date.now();
-    appendMessage('<i class="fa-solid fa-ellipsis fa-fade"></i> AI sedang memikirkan jawaban...', 'ai', typingId);
-
-    try {
-        // 3. Kirim pesan dan history ke server.js
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                history: chatHistory, 
-                message: text 
-            })
-        });
-
-        const data = await response.json();
-        
-        // Hapus tulisan loading
-        const typingElement = document.getElementById(typingId);
-        if (typingElement) typingElement.remove();
-
-        if (data.error) {
-            appendMessage(`<b>Waduh error:</b> ${data.error}`, 'ai');
-            return;
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch (e) {
+            console.log("Firebase belum disetting dengan benar.");
         }
 
-        let aiText = data.reply;
+        const userSessionId = "session_" + Date.now();
+        let firestoreUnsubscribe = null; 
+
+        // DOM Elements
+        const chatModal = document.getElementById('chatModal');
+        const btnAI = document.getElementById('btnAI');
+        const btnBot = document.getElementById('btnBot');
+        const btnLive = document.getElementById('btnLive');
+        const fabBtn = document.getElementById('fabBtn');
+        const closeChat = document.getElementById('closeChat');
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const chatBody = document.getElementById('chatBody');
+        const chatHeader = document.getElementById('chatHeader');
+        const chatTitle = document.getElementById('chatTitle');
+
+        const GEMINI_API_KEY = 'ISI_API_KEY_KAMU_DISINI'; 
         
-        // Format output agar rapi (bold dan baris baru)
-        aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        aiText = aiText.replace(/\n/g, '<br>');
+        let currentMode = 'AI';
 
-        appendMessage(aiText, 'ai');
+        // Mencegah scroll di background saat chat terbuka
+        function toggleBodyScroll(disable) {
+            if (disable) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
 
-        // Simpan ke riwayat obrolan agar AI ingat konteks pembicaraan
-        chatHistory.push({ role: 'user', text: text });
-        chatHistory.push({ role: 'ai', text: data.reply });
+        function openChat(mode) {
+            currentMode = mode;
+            chatModal.style.display = 'flex';
+            toggleBodyScroll(true); // Matikan scroll layar utama
+            chatBody.innerHTML = ''; 
+            
+            if (firestoreUnsubscribe) {
+                firestoreUnsubscribe();
+                firestoreUnsubscribe = null;
+            }
 
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        const typingElement = document.getElementById(typingId);
-        if (typingElement) typingElement.remove();
-        appendMessage("Jaringan internetmu sepertinya bermasalah nih. 🔧", 'ai');
-    }
-}
+            chatHeader.classList.remove('bot-mode', 'live-mode');
+            
+            if(mode === 'AI') {
+                chatTitle.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> LootSaku AI Pintar';
+                appendMessage('bot', 'Halo, Bossku! 👋 Saya AI Pintar LootSaku. Tanya aja apa saja pakai bahasa sehari-hari, saya bisa paham!');
+            } 
+            else if(mode === 'BOT') {
+                chatHeader.classList.add('bot-mode');
+                chatTitle.innerHTML = '<i class="fa-solid fa-robot"></i> Chatbot Assistant';
+                appendMessage('bot', 'Halo Bossku! 🤖 Saya Bot Asisten LootSaku.<br><br>Ada yang bisa saya bantu? Ketik salah satu kata kunci di bawah ini:<br><br>👉 <b>Harga</b><br>👉 <b>Bayar</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>');
+            }
+            else if(mode === 'LIVE') {
+                chatHeader.classList.add('live-mode');
+                chatTitle.innerHTML = '<i class="fa-solid fa-headset"></i> Live CS (Admin Asli)';
+                
+                if (firebaseConfig.apiKey.includes("ISI_API_KEY")) {
+                    appendMessage('bot', '⚠️ <b>ERROR:</b> Firebase belum disetting. Masukkan config Firebase kamu di baris kode JS untuk mencoba fitur Live Chat.');
+                    return;
+                }
 
-function appendMessage(text, sender, id = null) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('msg-bubble');
-    msgDiv.classList.add(sender === 'user' ? 'msg-user' : 'msg-ai');
-    if (id) msgDiv.id = id;
-    msgDiv.innerHTML = text;
-    
-    chatBox.appendChild(msgDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+                appendMessage('bot', 'Halo Bossku! Mohon tunggu sebentar, kamu akan terhubung dengan Admin kami... 👨‍💻');
+                startLiveChatListener();
+            }
+        }
+
+        btnAI.addEventListener('click', () => openChat('AI'));
+        btnBot.addEventListener('click', () => openChat('BOT'));
+        btnLive.addEventListener('click', () => openChat('LIVE'));
+        
+        fabBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openChat('BOT'); 
+        });
+        
+        closeChat.addEventListener('click', () => {
+            chatModal.style.display = 'none';
+            toggleBodyScroll(false); // Nyalakan lagi scroll layar utama
+        });
+
+        // ==========================================
+        // LOGIKA LIVE CHAT FIRESTORE
+        // ==========================================
+        function startLiveChatListener() {
+            if (!db) return;
+            const chatRef = db.collection('live_chats').doc(userSessionId).collection('messages').orderBy('timestamp');
+
+            firestoreUnsubscribe = chatRef.onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        if (data.sender === 'admin') {
+                            removeTypingIndicator();
+                            appendMessage('bot', data.text);
+                        }
+                    }
+                });
+            });
+        }
+
+        async function sendToFirestore(text) {
+            if (!db) return;
+            try {
+                await db.collection('live_chats').doc(userSessionId).collection('messages').add({
+                    text: text,
+                    sender: 'user',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showTypingIndicator('Admin manusia sedang membaca...');
+            } catch (error) {
+                console.error("Error mengirim:", error);
+                appendMessage('bot', 'Gagal mengirim pesan ke server.');
+            }
+        }
+
+        // ==========================================
+        // 1. LOGIKA AI ASSISTANT
+        // ==========================================
+        async function fetchGeminiResponse(message) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const systemPrompt = `Kamu adalah Customer Service AI yang ramah, asik, dan gaul untuk toko top-up game bernama "LootSaku". Selalu panggil user dengan sebutan "Bossku". Berikan jawaban yang singkat, padat, dan langsung ke intinya. Pertanyaan user: "${message}"`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt }] }]
+                    })
+                });
+                const data = await response.json();
+                if (data.candidates && data.candidates.length > 0) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+                return "Waduh Bossku, sistem AI lagi gangguan nih, coba lagi nanti iya.";
+            } catch (error) {
+                return "Maaf Bossku, API Key belum diatur atau koneksi terputus.";
+            }
+        }
+
+        // ==========================================
+        // 2. LOGIKA CHATBOT DASAR
+        // ==========================================
+        function getBasicBotResponse(message) {
+            const text = message.toLowerCase();
+
+            if (text.match(/(halo|hai|pagi|siang|malam|menu|help|bantuan|p)/)) {
+                return `Halo Bossku! 🤖 Saya Bot Asisten LootSaku.<br><br>Ada yang bisa saya bantu? Ketik salah satu kata kunci di bawah ini:<br><br>👉 <b>Harga</b> (Cek pricelist)<br>👉 <b>Bayar</b> (Metode pembayaran)<br>👉 <b>Status</b> (Cek pesanan)<br>👉 <b>Admin</b> (Hubungi CS)`;
+            } 
+            else if (text.match(/(harga|pricelist|berapa|price|daftar)/)) {
+                if (text.includes("ff") || text.includes("free fire")) {
+                    return `💎 <b>Harga Free Fire:</b><br>• 5 DM: Rp 1.000<br>• 70 DM: Rp 10.000<br>• 140 DM: Rp 19.500<br><br><i>⚡ Proses instan 1-3 detik via ID.</i>`;
+                } else if (text.includes("ml") || text.includes("mobile legend") || text.includes("mlbb")) {
+                    return `💎 <b>Harga Mobile Legends:</b><br>• 3 DM: Rp 1.500<br>• 86 DM: Rp 20.000<br>• 257 DM: Rp 59.000<br><br><i>⚠️ Jangan lupa sertakan ID + Zone ID ya.</i>`;
+                } else {
+                    return `🎮 Mau cek harga game apa Bossku?<br>Coba ketik lebih spesifik, contoh: <b>"Harga FF"</b> atau <b>"Harga ML"</b>.`;
+                }
+            }
+            else if (text.match(/(bayar|pembayaran|qris|dana|ovo|gopay|tf|transfer)/)) {
+                return `💳 <b>Metode Pembayaran LootSaku:</b><br><br>✅ <b>E-Wallet:</b> DANA, OVO, GoPay<br>✅ <b>QRIS:</b> Support semua bank<br>✅ <b>Virtual Account:</b> BCA, Mandiri, BRI<br>✅ <b>Retail:</b> Alfamart / Indomaret<br><br><i>Sistem otomatis 24/7 Bossku!</i>`;
+            }
+            else if (text.match(/(status|pesanan|belum masuk|lama|proses|invoice)/)) {
+                return `🔍 <b>Kendala Pesanan?</b><br><br>Jika diamond belum masuk lebih dari 5 menit, silakan siapkan <b>Nomor Invoice (Contoh: INV-123)</b> dan ketik <b>"Admin"</b> untuk dibantu pengecekan manual.`;
+            }
+            else if (text.match(/(admin|cs|manusia|operator|komplain)/)) {
+                return `👨‍💻 <b>Customer Service (Admin)</b><br><br>Jam operasional: 08:00 - 22:00 WIB.<br><br>Klik tombol di bawah untuk lanjut via WA:<br><br><a href="https://wa.me/6281234567890" target="_blank" style="display:inline-block; background:#00a884; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold; margin-top:5px;">📲 Chat Admin WA</a>`;
+            }
+            else {
+                return `Maaf Bossku, saya kurang paham kalimat tersebut 😅🙏<br><br>Coba ketik kata kunci seperti <b>"Menu"</b> atau <b>"Harga"</b>.`;
+            }
+        }
+
+        // ==========================================
+        // FUNGSI MENGIRIM PESAN & TAMPILAN
+        // ==========================================
+        function appendMessage(sender, text) {
+            const div = document.createElement('div');
+            div.className = sender === 'user' ? 'message user-message' : 'message bot-message';
+            div.innerHTML = text; 
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function showTypingIndicator(text) {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `<i>${text}</i>`;
+            chatBody.appendChild(typingDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) chatBody.removeChild(indicator);
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            const safeMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            appendMessage('user', safeMessage);
+            
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            let responseText = "";
+
+            if (currentMode === 'LIVE') {
+                await sendToFirestore(safeMessage);
+            } 
+            else if (currentMode === 'AI') {
+                showTypingIndicator('LootSaku AI sedang berpikir...');
+                responseText = await fetchGeminiResponse(message);
+                responseText = responseText.replace(/\n/g, "<br>");
+                removeTypingIndicator();
+                appendMessage('bot', responseText);
+            } 
+            else {
+                showTypingIndicator('Bot sedang mengetik...');
+                await new Promise(resolve => setTimeout(resolve, 800));
+                responseText = getBasicBotResponse(message);
+                removeTypingIndicator();
+                appendMessage('bot', responseText);
+            }
+
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !userInput.disabled) sendMessage();
+        });
     </script>
-
 </body>
 </html>
