@@ -21,7 +21,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Mencegah highlight biru saat elemen diklik di HP */
         * { -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -38,13 +37,40 @@
             width: 100%;
             max-width: 480px;
             padding: 0 20px;
-            padding-bottom: 80px; /* Spacer agar tidak tertutup tombol FAB */
+            padding-bottom: 80px;
+            position: relative;
         }
+
+        /* --- STYLING UNTUK LANGUAGE SWITCHER --- */
+        .lang-switch-container {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .lang-switch {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .lang-switch option {
+            background: #26161d;
+            color: white;
+        }
+        /* --------------------------------------- */
 
         .profile {
             text-align: center;
             margin-bottom: 25px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .profile-img {
@@ -73,7 +99,7 @@
             display: flex;
             justify-content: center;
             gap: 8px;
-            flex-wrap: wrap; /* Agar badge turun ke bawah kalau layar sempit */
+            flex-wrap: wrap;
         }
 
         .badge {
@@ -112,7 +138,7 @@
             cursor: pointer;
         }
 
-        .btn:active { transform: scale(0.98); } /* Efek klik di HP */
+        .btn:active { transform: scale(0.98); }
 
         .btn-ai { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); }
         .btn-bot { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
@@ -213,15 +239,12 @@
         }
 
         /* =========================================
-           CSS CHAT MODAL (RESPONSIF WHATSAPP STYLE)
+           CSS CHAT MODAL 
            ========================================= */
         .chat-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0; /* Menggunakan top, left, right, bottom 0 agar presisi di HP */
+            top: 0; left: 0; right: 0; bottom: 0;
             width: 100%;
             height: 100%;
             background-color: #0b141a; 
@@ -242,20 +265,19 @@
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
-            min-height: 60px; /* Pastikan tinggi header konsisten */
+            min-height: 60px;
         }
 
         .chat-header.bot-mode { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
         .chat-header.live-mode { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
 
-        /* PERBAIKAN TOMBOL BACK */
         .close-chat {
             background: none;
             border: none;
             color: white;
             font-size: 20px;
             cursor: pointer;
-            padding: 10px 15px 10px 0; /* Area klik diperbesar */
+            padding: 10px 15px 10px 0;
             margin-right: 5px;
             display: flex;
             align-items: center;
@@ -274,14 +296,13 @@
         }
 
         .chat-body {
-            flex: 1 1 auto; /* PENTING: Memaksa chat body mengisi sisa layar */
+            flex: 1 1 auto;
             padding: 15px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
             background-color: #0b141a;
-            /* Background pattern WA */
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
             background-blend-mode: overlay;
         }
@@ -319,8 +340,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
-            min-height: 60px; /* Tinggi minimal footer */
-            /* PENTING: Menghindari footer tertutup keyboard di iOS/Android */
+            min-height: 60px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
 
@@ -350,7 +370,7 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            flex-shrink: 0; /* Jangan sampai tombol mengecil */
+            flex-shrink: 0;
         }
 
         .send-btn:active { transform: scale(0.9); }
@@ -365,37 +385,44 @@
 <body>
 
     <div class="container">
+        <div class="lang-switch-container">
+            <select class="lang-switch" id="langSelect" onchange="changeLanguage(this.value)">
+                <option value="id">🇮🇩 ID</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="ms">🇲🇾 MY</option> </select>
+        </div>
+
         <div class="profile">
-            <a href="https://lootsaku.com/">
+            <a href="#">
                 <img src="LootSaku.jpeg" alt="LootSaku Logo" class="profile-img" onerror="this.src='https://placehold.co/100x100/eeeeee/cccccc?text=Logo'">
             </a>
             <h1>LootSaku</h1>
-            <p>Digital Game Store 🎮<br>Top Up Cepat, Harga Bersahabat 💎</p>
+            <p data-i18n="desc">Digital Game Store 🎮<br>Top Up Cepat, Harga Bersahabat 💎</p>
             
             <div class="badges">
-                <div class="badge"><i class="fa-solid fa-lock"></i> Aman & Terpercaya</div>
-                <div class="badge"><i class="fa-solid fa-bolt"></i> Fast Response</div>
+                <div class="badge"><i class="fa-solid fa-lock"></i> <span data-i18n="badge1">Aman & Terpercaya</span></div>
+                <div class="badge"><i class="fa-solid fa-bolt"></i> <span data-i18n="badge2">Fast Response</span></div>
             </div>
         </div>
 
         <div class="action-btns">
             <div class="btn btn-ai" id="btnAI">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>  AI Assistant 
+                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="btnAI">AI Assistant</span>
             </div>
             <div class="btn btn-bot" id="btnBot">
-                <i class="fa-solid fa-robot"></i>  Chatbot Assistant
+                <i class="fa-solid fa-robot"></i> <span data-i18n="btnBot">Chatbot Assistant</span>
             </div>
             <div class="btn btn-live" id="btnLive">
-                <i class="fa-solid fa-headset"></i>  Customer Support
+                <i class="fa-solid fa-headset"></i> <span data-i18n="btnLive">Customer Support</span>
             </div>
             <a href="https://lootsaku.com/" class="btn btn-web">
-                <i class="fa-solid fa-globe"></i> Kunjungi Website Utama
+                <i class="fa-solid fa-globe"></i> <span data-i18n="btnWeb">Kunjungi Website Utama</span>
             </a>
         </div>
 
         <div class="category">
             <div class="category-title">
-                <i class="fa-solid fa-fire"></i> Top Up Game Populer
+                <i class="fa-solid fa-fire"></i> <span data-i18n="catGame">Top Up Game Populer</span>
             </div>
             <div class="grid-container">
                 <a href="https://lootsaku.com/game/free-fire" class="grid-item">
@@ -419,7 +446,7 @@
 
         <div class="category">
             <div class="category-title">
-                <i class="fa-solid fa-ticket"></i> Voucher & Aplikasi
+                <i class="fa-solid fa-ticket"></i> <span data-i18n="catVoucher">Voucher & Aplikasi</span>
             </div>
             <div class="grid-container">
                 <a href="https://lootsaku.com/voucher/roblox" class="grid-item">
@@ -442,7 +469,7 @@
         </div>
 
         <footer>
-            © 2026 <a href="https://lootsaku.com/">LootSaku</a> - All Rights Reserved.
+            © 2026 <a href="https://lootsaku.com/">LootSaku</a> - <span data-i18n="footerRights">All Rights Reserved.</span>
         </footer>
     </div>
 
@@ -469,7 +496,135 @@
 
     <script>
         // ==========================================
-        // KONFIGURASI FIREBASE
+        // DICTIONARY MULTI-BAHASA
+        // ==========================================
+        const translations = {
+            id: {
+                desc: "Digital Game Store 🎮<br>Top Up Cepat, Harga Bersahabat 💎",
+                badge1: "Aman & Terpercaya",
+                badge2: "Fast Response",
+                btnAI: "AI Assistant",
+                btnBot: "Chatbot Assistant",
+                btnLive: "Customer Support",
+                btnWeb: "Kunjungi Website Utama",
+                catGame: "Top Up Game Populer",
+                catVoucher: "Voucher & Aplikasi",
+                footerRights: "All Rights Reserved.",
+                chatPlaceholder: "Ketik pesan...",
+                
+                // Chat Texts
+                titleAI: "LootSaku AI Pintar",
+                titleLive: "Live CS (Admin Asli)",
+                greetAI: "Halo, Bossku! 👋 Saya AI Pintar LootSaku. Tanya aja apa saja pakai bahasa sehari-hari, saya bisa paham!",
+                greetBot: "Halo Bossku! 🤖 Saya Bot Asisten LootSaku.<br><br>Ada yang bisa saya bantu? Ketik salah satu kata kunci di bawah ini:<br><br>👉 <b>Harga</b><br>👉 <b>Bayar</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>",
+                greetLive: "Halo, terima kasih telah menghubungi LootSaku 🙏<br><br>Pesan Anda telah kami terima. Untuk memastikan pelayanan terbaik, permintaan Anda akan segera kami teruskan ke tim terkait.<br><br>Mohon tunggu sebentar ya, nanti tim kami akan segera menghubungi Anda kembali.<br><br>Terima kasih atas kepercayaan Anda kepada LootSaku ✨",
+                
+                aiTyping: "LootSaku AI sedang berpikir...",
+                botTyping: "Bot sedang mengetik...",
+                aiError1: "Waduh Bossku, sistem AI lagi gangguan nih, coba lagi nanti iya.",
+                aiError2: "Maaf Bossku, API Key belum diatur atau koneksi terputus.",
+                dbError: "Gagal mengirim pesan. Pastikan Rules Firebase sudah diubah.",
+                
+                // Bot Answers (ID)
+                botAnsPriceFF: "💎 <b>Harga FF:</b><br>• 5 DM: Rp 1.000<br>• 70 DM: Rp 10.000",
+                botAnsPriceML: "💎 <b>Harga MLBB:</b><br>• 3 DM: Rp 1.500<br>• 86 DM: Rp 20.000",
+                botAnsPriceHint: "🎮 Coba ketik: <b>'Harga FF'</b> atau <b>'Harga ML'</b>.",
+                botAnsPay: "💳 <b>Metode Pembayaran:</b><br>✅ E-Wallet (DANA, OVO)<br>✅ QRIS<br>✅ Virtual Account",
+                botAnsStatus: "🔍 Jika pesanan lama, siapkan <b>Nomor Invoice</b> dan ketik <b>'Admin'</b>.",
+                botAnsAdmin: "👨‍💻 <b>Customer Service</b><br><a href='https://wa.me/6281234567890' target='_blank' style='display:inline-block; background:#00a884; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold; margin-top:5px;'>📲 Chat Admin WA</a>",
+                botAnsUnknown: "Maaf Bossku, kurang paham 😅 Coba ketik <b>'Menu'</b>."
+            },
+            en: {
+                desc: "Digital Game Store 🎮<br>Fast Top Up, Friendly Prices 💎",
+                badge1: "Safe & Trusted",
+                badge2: "Fast Response",
+                btnAI: "AI Assistant",
+                btnBot: "Chatbot Assistant",
+                btnLive: "Customer Support",
+                btnWeb: "Visit Main Website",
+                catGame: "Popular Game Top Ups",
+                catVoucher: "Vouchers & Apps",
+                footerRights: "All Rights Reserved.",
+                chatPlaceholder: "Type a message...",
+
+                // Chat Texts
+                titleAI: "Smart LootSaku AI",
+                titleLive: "Live CS (Real Admin)",
+                greetAI: "Hello, Boss! 👋 I am LootSaku's Smart AI. Ask me anything, I understand everyday language!",
+                greetBot: "Hello Boss! 🤖 I am LootSaku's Bot Assistant.<br><br>How can I help you? Type one of the keywords below:<br><br>👉 <b>Price</b><br>👉 <b>Pay</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>",
+                greetLive: "Hello, thank you for contacting LootSaku 🙏<br><br>We have received your message. To ensure the best service, your request will be forwarded to our team.<br><br>Please wait a moment, our team will get back to you shortly.<br><br>Thank you for trusting LootSaku ✨",
+                
+                aiTyping: "LootSaku AI is thinking...",
+                botTyping: "Bot is typing...",
+                aiError1: "Oops, the AI system is having trouble, please try again later.",
+                aiError2: "Sorry Boss, the API Key is not set or the connection is lost.",
+                dbError: "Failed to send message. Make sure Firebase Rules are configured.",
+
+                // Bot Answers (EN)
+                botAnsPriceFF: "💎 <b>FF Price:</b><br>• 5 DM: Rp 1.000<br>• 70 DM: Rp 10.000",
+                botAnsPriceML: "💎 <b>MLBB Price:</b><br>• 3 DM: Rp 1.500<br>• 86 DM: Rp 20.000",
+                botAnsPriceHint: "🎮 Try typing: <b>'FF Price'</b> or <b>'ML Price'</b>.",
+                botAnsPay: "💳 <b>Payment Methods:</b><br>✅ E-Wallet (DANA, OVO)<br>✅ QRIS<br>✅ Virtual Account",
+                botAnsStatus: "🔍 If your order is delayed, prepare your <b>Invoice Number</b> and type <b>'Admin'</b>.",
+                botAnsAdmin: "👨‍💻 <b>Customer Service</b><br><a href='https://wa.me/6281234567890' target='_blank' style='display:inline-block; background:#00a884; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold; margin-top:5px;'>📲 Chat WA Admin</a>",
+                botAnsUnknown: "Sorry Boss, I don't understand 😅 Try typing <b>'Menu'</b>."
+            },
+            ms: { // TAMBAHAN BAHASA MALAYSIA
+                desc: "Kedai Permainan Digital 🎮<br>Top Up Pantas, Harga Berpatutan 💎",
+                badge1: "Selamat & Dipercayai",
+                badge2: "Respon Pantas",
+                btnAI: "Pembantu AI",
+                btnBot: "Pembantu Chatbot",
+                btnLive: "Sokongan Pelanggan",
+                btnWeb: "Lawati Laman Utama",
+                catGame: "Top Up Permainan Popular",
+                catVoucher: "Baucar & Aplikasi",
+                footerRights: "Hak Cipta Terpelihara.",
+                chatPlaceholder: "Taip mesej...",
+
+                // Chat Texts
+                titleAI: "LootSaku AI Pintar",
+                titleLive: "Live CS (Admin Sebenar)",
+                greetAI: "Helo, Boss! 👋 Saya AI Pintar LootSaku. Tanya apa sahaja menggunakan bahasa seharian, saya boleh faham!",
+                greetBot: "Helo Boss! 🤖 Saya Bot Pembantu LootSaku.<br><br>Ada apa-apa yang boleh saya bantu? Taip salah satu kata kunci di bawah:<br><br>👉 <b>Harga</b><br>👉 <b>Bayar</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>",
+                greetLive: "Helo, terima kasih kerana menghubungi LootSaku 🙏<br><br>Mesej anda telah kami terima. Untuk memastikan perkhidmatan terbaik, permintaan anda akan dipanjangkan kepada pasukan kami dengan segera.<br><br>Sila tunggu sebentar ya, pasukan kami akan menghubungi anda kembali tidak lama lagi.<br><br>Terima kasih atas kepercayaan anda kepada LootSaku ✨",
+                
+                aiTyping: "LootSaku AI sedang berfikir...",
+                botTyping: "Bot sedang menaip...",
+                aiError1: "Alamak Boss, sistem AI sedang mengalami gangguan, sila cuba lagi nanti.",
+                aiError2: "Maaf Boss, API Key belum ditetapkan atau sambungan terputus.",
+                dbError: "Gagal menghantar mesej. Pastikan Rules Firebase sudah diubah.",
+
+                // Bot Answers (MS)
+                botAnsPriceFF: "💎 <b>Harga FF:</b><br>• 5 DM: Rp 1.000<br>• 70 DM: Rp 10.000",
+                botAnsPriceML: "💎 <b>Harga MLBB:</b><br>• 3 DM: Rp 1.500<br>• 86 DM: Rp 20.000",
+                botAnsPriceHint: "🎮 Cuba taip: <b>'Harga FF'</b> atau <b>'Harga ML'</b>.",
+                botAnsPay: "💳 <b>Kaedah Pembayaran:</b><br>✅ E-Wallet (DANA, OVO)<br>✅ QRIS<br>✅ Virtual Account",
+                botAnsStatus: "🔍 Jika pesanan lambat, sediakan <b>Nombor Invois</b> dan taip <b>'Admin'</b>.",
+                botAnsAdmin: "👨‍💻 <b>Khidmat Pelanggan</b><br><a href='https://wa.me/6281234567890' target='_blank' style='display:inline-block; background:#00a884; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold; margin-top:5px;'>📲 Chat Admin WA</a>",
+                botAnsUnknown: "Maaf Boss, saya kurang faham 😅 Cuba taip <b>'Menu'</b>."
+            }
+        };
+
+        let currentLang = 'id';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Ubah semua elemen yang punya atribut data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(elem => {
+                const key = elem.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    elem.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Ubah placeholder input chat
+            document.getElementById('userInput').placeholder = translations[lang].chatPlaceholder;
+        }
+
+        // ==========================================
+        // KONFIGURASI FIREBASE (Tetap Sama)
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyDuCyKxaJR-q1ZQ4lVDxyHjPZz8k8007WI",
@@ -508,7 +663,6 @@
         const GEMINI_API_KEY = 'ISI_API_KEY_KAMU_DISINI'; 
         let currentMode = 'AI';
 
-        // Fungsi untuk mengunci scroll body saat modal terbuka
         function toggleBodyScroll(disable) {
             if (disable) {
                 document.body.style.overflow = 'hidden';
@@ -522,7 +676,7 @@
         function openChat(mode) {
             currentMode = mode;
             chatModal.style.display = 'flex';
-            toggleBodyScroll(true); // Kunci background scroll
+            toggleBodyScroll(true);
             chatBody.innerHTML = ''; 
             
             if (firestoreUnsubscribe) {
@@ -531,52 +685,48 @@
             }
 
             chatHeader.classList.remove('bot-mode', 'live-mode');
+            const t = translations[currentLang];
             
             if(mode === 'AI') {
-                chatTitle.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> LootSaku AI Pintar';
-                appendMessage('bot', 'Halo, Bossku! 👋 Saya AI Pintar LootSaku. Tanya aja apa saja pakai bahasa sehari-hari, saya bisa paham!');
+                chatTitle.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${t.titleAI}`;
+                appendMessage('bot', t.greetAI);
             } 
             else if(mode === 'BOT') {
                 chatHeader.classList.add('bot-mode');
                 chatTitle.innerHTML = '<i class="fa-solid fa-robot"></i> Chatbot Assistant';
-                appendMessage('bot', 'Halo Bossku! 🤖 Saya Bot Asisten LootSaku.<br><br>Ada yang bisa saya bantu? Ketik salah satu kata kunci di bawah ini:<br><br>👉 <b>Harga</b><br>👉 <b>Bayar</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>');
+                appendMessage('bot', t.greetBot);
             }
             else if(mode === 'LIVE') {
                 chatHeader.classList.add('live-mode');
-                chatTitle.innerHTML = '<i class="fa-solid fa-headset"></i> Live CS (Admin Asli)';
+                chatTitle.innerHTML = `<i class="fa-solid fa-headset"></i> ${t.titleLive}`;
                 
                 if (firebaseConfig.apiKey.includes("ISI_API_KEY")) {
-                    appendMessage('bot', '⚠️ <b>ERROR:</b> Firebase belum disetting. Masukkan config Firebase kamu di baris kode JS.');
+                    appendMessage('bot', '⚠️ <b>ERROR:</b> Firebase belum disetting.');
                     return;
                 }
-
-                appendMessage('bot', '');
                 startLiveChatListener();
             }
         }
 
-        // EVENT LISTENERS
         btnAI.addEventListener('click', () => openChat('AI'));
         btnBot.addEventListener('click', () => openChat('BOT'));
         btnLive.addEventListener('click', () => openChat('LIVE'));
         
         fabBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            openChat('LIVE'); // Default FAB buka Live Chat
+            openChat('LIVE');
         });
         
         closeChat.addEventListener('click', () => {
             chatModal.style.display = 'none';
-            toggleBodyScroll(false); // Kembalikan scroll body
+            toggleBodyScroll(false); 
         });
 
-// ==========================================
-        // LOGIKA LIVE CHAT FIRESTORE (DIPERBAIKI)
+        // ==========================================
+        // LOGIKA LIVE CHAT FIRESTORE
         // ==========================================
         function startLiveChatListener() {
             if (!db) return;
-
-            // PENTING: Beri tahu Admin bahwa ada user yang buka chat
             db.collection('active_sessions').doc(userSessionId).set({
                 last_active: firebase.firestore.FieldValue.serverTimestamp(),
                 status: 'online'
@@ -600,25 +750,22 @@
         async function sendToFirestore(text) {
             if (!db) return;
             try {
-                // 1. Simpan pesannya
                 await db.collection('live_chats').doc(userSessionId).collection('messages').add({
                     text: text,
                     sender: 'user',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 2. Update waktu terakhir aktif biar Admin tahu user masih ngetik
                 db.collection('active_sessions').doc(userSessionId).set({
                     last_active: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'online'
                 }, { merge: true });
 
-                // 3. Tampilkan balasan otomatis HANYA untuk pesan pertama (opsional, bisa dihapus kalau tidak mau)
-                appendMessage('bot', `Halo, terima kasih telah menghubungi LootSaku 🙏<br><br>Pesan Anda telah kami terima. Untuk memastikan pelayanan terbaik, permintaan Anda akan segera kami teruskan ke tim terkait.<br><br>Mohon tunggu sebentar ya, nanti tim kami akan segera menghubungi Anda kembali.<br><br>Terima kasih atas kepercayaan Anda kepada LootSaku ✨`);
+                const t = translations[currentLang];
+                appendMessage('bot', t.greetLive);
                 
             } catch (error) {
-                console.error("Error mengirim:", error);
-                appendMessage('bot', 'Gagal mengirim pesan. Pastikan Rules Firebase sudah diubah.');
+                appendMessage('bot', translations[currentLang].dbError);
             }
         }
 
@@ -627,7 +774,14 @@
         // ==========================================
         async function fetchGeminiResponse(message) {
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            const systemPrompt = `Kamu adalah Customer Service AI yang ramah, asik, dan gaul untuk toko top-up game bernama "LootSaku". Selalu panggil user dengan sebutan "Bossku". Berikan jawaban yang singkat, padat, dan langsung ke intinya. Pertanyaan user: "${message}"`;
+            const t = translations[currentLang];
+            
+            // Instruksikan AI untuk membalas menggunakan bahasa yang dipilih user
+            let langInstruction = 'English';
+            if (currentLang === 'id') langInstruction = 'Bahasa Indonesia';
+            if (currentLang === 'ms') langInstruction = 'Bahasa Melayu (Malaysia)'; // INSTRUKSI AI MALAYSIA
+            
+            const systemPrompt = `You are a friendly, cool Customer Service AI for a top-up game store named "LootSaku". Always call the user "Boss". Give short, concise, and direct answers. VERY IMPORTANT: You MUST answer in ${langInstruction}. User's question: "${message}"`;
 
             try {
                 const response = await fetch(endpoint, {
@@ -641,31 +795,34 @@
                 if (data.candidates && data.candidates.length > 0) {
                     return data.candidates[0].content.parts[0].text;
                 }
-                return "Waduh Bossku, sistem AI lagi gangguan nih, coba lagi nanti iya.";
+                return t.aiError1;
             } catch (error) {
-                return "Maaf Bossku, API Key belum diatur atau koneksi terputus.";
+                return t.aiError2;
             }
         }
 
         // ==========================================
-        // 2. LOGIKA CHATBOT DASAR
+        // 2. LOGIKA CHATBOT DASAR (SUPPORT 3 BAHASA)
         // ==========================================
         function getBasicBotResponse(message) {
             const text = message.toLowerCase();
-            if (text.match(/(halo|hai|pagi|siang|malam|menu|help|bantuan|p)/)) {
-                return `Halo Bossku! 🤖 Saya Bot Asisten LootSaku.<br><br>👉 <b>Harga</b><br>👉 <b>Bayar</b><br>👉 <b>Status</b><br>👉 <b>Admin</b>`;
+            const t = translations[currentLang];
+
+            // Ditambahkan kata sapaan Melayu seperti 'helo'
+            if (text.match(/(halo|hai|pagi|siang|malam|menu|help|bantuan|p|hello|hi|helo|salam)/)) {
+                return t.greetBot;
             } else if (text.match(/(harga|pricelist|berapa|price|daftar)/)) {
-                if (text.includes("ff") || text.includes("free fire")) return `💎 <b>Harga FF:</b><br>• 5 DM: Rp 1.000<br>• 70 DM: Rp 10.000`;
-                else if (text.includes("ml") || text.includes("mlbb")) return `💎 <b>Harga MLBB:</b><br>• 3 DM: Rp 1.500<br>• 86 DM: Rp 20.000`;
-                else return `🎮 Coba ketik: <b>"Harga FF"</b> atau <b>"Harga ML"</b>.`;
-            } else if (text.match(/(bayar|pembayaran|qris|dana|ovo|gopay|tf|transfer)/)) {
-                return `💳 <b>Metode Pembayaran:</b><br>✅ E-Wallet (DANA, OVO)<br>✅ QRIS<br>✅ Virtual Account`;
-            } else if (text.match(/(status|pesanan|belum masuk|lama|proses|invoice)/)) {
-                return `🔍 Jika pesanan lama, siapkan <b>Nomor Invoice</b> dan ketik <b>"Admin"</b>.`;
-            } else if (text.match(/(admin|cs|manusia|operator|komplain)/)) {
-                return `👨‍💻 <b>Customer Service</b><br><a href="https://wa.me/6281234567890" target="_blank" style="display:inline-block; background:#00a884; color:white; padding:5px 10px; border-radius:5px; text-decoration:none; font-weight:bold; margin-top:5px;">📲 Chat Admin WA</a>`;
+                if (text.includes("ff") || text.includes("free fire")) return t.botAnsPriceFF;
+                else if (text.includes("ml") || text.includes("mlbb")) return t.botAnsPriceML;
+                else return t.botAnsPriceHint;
+            } else if (text.match(/(bayar|pembayaran|qris|dana|ovo|gopay|tf|transfer|pay|payment)/)) {
+                return t.botAnsPay;
+            } else if (text.match(/(status|pesanan|belum masuk|lama|proses|invoice|order|lambat)/)) {
+                return t.botAnsStatus;
+            } else if (text.match(/(admin|cs|manusia|operator|komplain|human|support|bantuan)/)) {
+                return t.botAnsAdmin;
             } else {
-                return `Maaf Bossku, kurang paham 😅 Coba ketik <b>"Menu"</b>.`;
+                return t.botAnsUnknown;
             }
         }
 
@@ -677,7 +834,6 @@
             div.className = sender === 'user' ? 'message user-message' : 'message bot-message';
             div.innerHTML = text; 
             chatBody.appendChild(div);
-            // Timeout kecil agar render HTML selesai sebelum scroll
             setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 50);
         }
 
@@ -706,20 +862,21 @@
             userInput.disabled = true;
             sendBtn.disabled = true;
 
+            const t = translations[currentLang];
             let responseText = "";
 
             if (currentMode === 'LIVE') {
                 await sendToFirestore(safeMessage);
             } 
             else if (currentMode === 'AI') {
-                showTypingIndicator('LootSaku AI sedang berpikir...');
+                showTypingIndicator(t.aiTyping);
                 responseText = await fetchGeminiResponse(message);
                 responseText = responseText.replace(/\n/g, "<br>");
                 removeTypingIndicator();
                 appendMessage('bot', responseText);
             } 
             else {
-                showTypingIndicator('Bot sedang mengetik...');
+                showTypingIndicator(t.botTyping);
                 await new Promise(resolve => setTimeout(resolve, 800));
                 responseText = getBasicBotResponse(message);
                 removeTypingIndicator();
