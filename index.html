@@ -570,11 +570,18 @@
             toggleBodyScroll(false); // Kembalikan scroll body
         });
 
-        // ==========================================
-        // LOGIKA LIVE CHAT FIRESTORE
+// ==========================================
+        // LOGIKA LIVE CHAT FIRESTORE (DIPERBAIKI)
         // ==========================================
         function startLiveChatListener() {
             if (!db) return;
+
+            // PENTING: Beri tahu Admin bahwa ada user yang buka chat
+            db.collection('active_sessions').doc(userSessionId).set({
+                last_active: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'online'
+            }).catch(error => console.error("Error update sesi:", error));
+
             const chatRef = db.collection('live_chats').doc(userSessionId).collection('messages').orderBy('timestamp');
 
             firestoreUnsubscribe = chatRef.onSnapshot((snapshot) => {
@@ -593,16 +600,25 @@
         async function sendToFirestore(text) {
             if (!db) return;
             try {
+                // 1. Simpan pesannya
                 await db.collection('live_chats').doc(userSessionId).collection('messages').add({
                     text: text,
                     sender: 'user',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                // PERBAIKAN: Mengganti multiline string dengan backtick dan menggunakan appendMessage
+
+                // 2. Update waktu terakhir aktif biar Admin tahu user masih ngetik
+                db.collection('active_sessions').doc(userSessionId).set({
+                    last_active: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'online'
+                }, { merge: true });
+
+                // 3. Tampilkan balasan otomatis HANYA untuk pesan pertama (opsional, bisa dihapus kalau tidak mau)
                 appendMessage('bot', `Halo, terima kasih telah menghubungi LootSaku 🙏<br><br>Pesan Anda telah kami terima. Untuk memastikan pelayanan terbaik, permintaan Anda akan segera kami teruskan ke tim terkait.<br><br>Mohon tunggu sebentar ya, nanti tim kami akan segera menghubungi Anda kembali.<br><br>Terima kasih atas kepercayaan Anda kepada LootSaku ✨`);
+                
             } catch (error) {
                 console.error("Error mengirim:", error);
-                appendMessage('bot', 'Gagal mengirim pesan ke server.');
+                appendMessage('bot', 'Gagal mengirim pesan. Pastikan Rules Firebase sudah diubah.');
             }
         }
 
